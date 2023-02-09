@@ -112,7 +112,7 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
 
           <DrawerBody>
             <Grid templateRows='repeat(5, 1fr)' gap={6}>
-              <Button
+              {/* <Button
                 w='80%'
                 h='10'
                 justifyContent='left'
@@ -146,7 +146,7 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
               >
                 {' '}
                 <EditIcon w={10} /> Update Payroll{' '}
-              </Button>
+              </Button> */}
               <AddEmployee
                 onValChange={onValChange}
                 formObject={formObject}
@@ -173,7 +173,7 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
                 accountChangedHandler={accountChangedHandler}
               /> */}
 
-              <Button
+              {/* <Button
                 w='80%'
                 h='10'
                 justifyContent='left'
@@ -197,7 +197,7 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
               >
                 {' '}
                 <CalendarIcon w={10} /> Activity Log{' '}
-              </Button>
+              </Button> */}
             </Grid>
           </DrawerBody>
 
