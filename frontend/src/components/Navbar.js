@@ -105,10 +105,6 @@ export default function Nav() {
     }
   };
 
-  // const refreshState = () => {
-  //   dispatch(connect({ connected: false }));
-  // };
-
   const disconnectWallet = async () => {
     // await web3Modal.clearCachedProvider();
     // refreshState();
@@ -164,7 +160,8 @@ export default function Nav() {
                     display: useBreakpointValue({ base: 'none', md: 'block' }),
                     fontWeight: 700,
                   }}
-                  href='/about'>
+                  href='/about'
+                >
                   About us
                 </Link>
                 <Connect

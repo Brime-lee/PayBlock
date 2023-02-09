@@ -8,9 +8,13 @@ import {
   Icon,
   useColorModeValue,
   createIcon,
+  Link,
 } from '@chakra-ui/react';
+import { useSelector } from 'react-redux';
 
 export default function AboutHero() {
+  const web3 = useSelector((state) => state.web3);
+
   return (
     <>
       <Container maxW={'3xl'}>
@@ -44,17 +48,22 @@ export default function AboutHero() {
             alignSelf={'center'}
             position={'relative'}
           >
-            <Button
-              colorScheme={'green'}
-              bg={'green.400'}
-              rounded={'full'}
-              px={6}
-              _hover={{
-                bg: 'green.500',
-              }}
+            <Link
+              href={web3?.connected ? '/userHome' : '/signup'}
+              style={{ textDecoration: 'none' }}
             >
-              Get Started
-            </Button>
+              <Button
+                colorScheme={'green'}
+                bg={'green.400'}
+                rounded={'full'}
+                px={6}
+                _hover={{
+                  bg: 'green.500',
+                }}
+              >
+                Get Started
+              </Button>
+            </Link>
             <Box>
               <Icon
                 as={Arrow}
