@@ -16,18 +16,26 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
+
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 import Wallet from '../assets/wallet-icon.png';
 
-export default function Connect({ connectWallet, disconnectWallet }) {
+export default function Connect() {
   const web3 = useSelector((state) => state.web3);
   const display = useBreakpointValue({ base: 'none', md: 'block' });
   const mobileDisplay = useBreakpointValue({ base: 'block', md: 'none' });
   const connectedButtonBg = useColorModeValue('green.100', '');
   const connectedButtonBgHover = useColorModeValue('green.700', 'green.300');
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnect } = useDisconnect();
 
   return (
     <>
-      {web3.connected ? (
+      {isConnected ? (
         <Popover>
           <PopoverTrigger>
             <Button
@@ -46,11 +54,8 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               <span style={{ marginRight: '20px' }}>
                 {web3?.accountBalance} MATIC
               </span>
-              {web3?.account?.slice(0, 6)}.......
-              {web3?.account?.slice(
-                web3?.account.length - 4,
-                web3?.account.length
-              )}
+              {address.slice(0, 6)}.......
+              {address.slice(address.length - 4, address.length)}
             </Button>
           </PopoverTrigger>
           <Portal>
@@ -62,7 +67,7 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               <PopoverCloseButton />
               <PopoverBody>
                 <Button
-                  onClick={disconnectWallet}
+                  onClick={() => disconnect()}
                   variant='outline'
                   colorScheme='red'
                   _hover={{ bg: 'red.400', color: 'white' }}
@@ -86,12 +91,12 @@ export default function Connect({ connectWallet, disconnectWallet }) {
           bg={'green.400'}
           align={'left'}
           _hover={{ bg: 'green.500' }}
-          onClick={connectWallet}
+          onClick={() => connect()}
         >
           Connect wallet
         </Button>
       )}
-      {web3.connected ? (
+      {isConnected ? (
         <Popover>
           <PopoverTrigger>
             <Button
@@ -107,14 +112,8 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               align={'left'}
               _hover={{ color: 'green.400' }}
             >
-              {/* <span style={{ marginRight: '20px' }}>
-                {web3?.accountBalance} MATIC
-              </span> */}
-              {web3?.account?.slice(0, 6)}.......
-              {web3?.account?.slice(
-                web3?.account.length - 4,
-                web3?.account.length
-              )}
+              {address?.slice(0, 6)}.......
+              {address?.slice(address.length - 4, address.length)}
             </Button>
           </PopoverTrigger>
           <Portal>
@@ -126,7 +125,7 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               <PopoverCloseButton />
               <PopoverBody>
                 <Button
-                  onClick={disconnectWallet}
+                  onClick={() => disconnect()}
                   variant='outline'
                   colorScheme='red'
                   _hover={{ bg: 'red.400', color: 'white' }}
@@ -145,7 +144,7 @@ export default function Connect({ connectWallet, disconnectWallet }) {
             display: mobileDisplay,
           }}
         >
-          <Link onClick={connectWallet}>
+          <Link onClick={() => connect()}>
             <Image alt={'logo'} fit={'cover'} align={'center'} src={Wallet} />
           </Link>
         </Box>
