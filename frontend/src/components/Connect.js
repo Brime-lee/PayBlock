@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -15,14 +15,13 @@ import {
   Popover,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useSelector } from 'react-redux';
-
+import { ethers } from 'ethers';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
+
 import Wallet from '../assets/wallet-icon.png';
 
 export default function Connect() {
-  const web3 = useSelector((state) => state.web3);
   const display = useBreakpointValue({ base: 'none', md: 'block' });
   const mobileDisplay = useBreakpointValue({ base: 'block', md: 'none' });
   const connectedButtonBg = useColorModeValue('green.100', '');
@@ -32,6 +31,26 @@ export default function Connect() {
     connector: new InjectedConnector(),
   });
   const { disconnect } = useDisconnect();
+
+  const [balance, setBalance] = useState(null);
+
+  useEffect(() => {
+    // Connect to the Ethereum network using Ethers.js
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    // Get the current account address
+    provider.listAccounts().then(([address]) => {
+      // Get the account balance
+      provider.getBalance(address).then((balance) => {
+        // Convert the balance to ETH and format it to 2 decimal places
+        const balanceInEth = ethers.utils.formatEther(balance);
+        const formattedBalance = parseFloat(balanceInEth).toFixed(2);
+
+        // Update the state with the formatted balance
+        setBalance(formattedBalance);
+      });
+    });
+  }, []);
 
   return (
     <>
@@ -51,9 +70,7 @@ export default function Connect() {
               align={'left'}
               _hover={{ color: connectedButtonBgHover }}
             >
-              <span style={{ marginRight: '20px' }}>
-                {web3?.accountBalance} MATIC
-              </span>
+              <span style={{ marginRight: '20px' }}>{balance} MATIC</span>
               {address.slice(0, 6)}.......
               {address.slice(address.length - 4, address.length)}
             </Button>
