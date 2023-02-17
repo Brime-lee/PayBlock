@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -15,19 +15,46 @@ import {
   Popover,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useSelector } from 'react-redux';
+import { ethers } from 'ethers';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
+
 import Wallet from '../assets/wallet-icon.png';
 
-export default function Connect({ connectWallet, disconnectWallet }) {
-  const web3 = useSelector((state) => state.web3);
+export default function Connect() {
   const display = useBreakpointValue({ base: 'none', md: 'block' });
   const mobileDisplay = useBreakpointValue({ base: 'block', md: 'none' });
   const connectedButtonBg = useColorModeValue('green.100', '');
   const connectedButtonBgHover = useColorModeValue('green.700', 'green.300');
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnect } = useDisconnect();
+
+  const [balance, setBalance] = useState(null);
+
+  useEffect(() => {
+    // Connect to the Ethereum network using Ethers.js
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    // Get the current account address
+    provider.listAccounts().then(([address]) => {
+      // Get the account balance
+      provider.getBalance(address).then((balance) => {
+        // Convert the balance to ETH and format it to 2 decimal places
+        const balanceInEth = ethers.utils.formatEther(balance);
+        const formattedBalance = parseFloat(balanceInEth).toFixed(2);
+
+        // Update the state with the formatted balance
+        setBalance(formattedBalance);
+      });
+    });
+  }, []);
 
   return (
     <>
-      {web3.connected ? (
+      {isConnected ? (
         <Popover>
           <PopoverTrigger>
             <Button
@@ -43,14 +70,9 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               align={'left'}
               _hover={{ color: connectedButtonBgHover }}
             >
-              <span style={{ marginRight: '20px' }}>
-                {web3?.accountBalance} MATIC
-              </span>
-              {web3?.account?.slice(0, 6)}.......
-              {web3?.account?.slice(
-                web3?.account.length - 4,
-                web3?.account.length
-              )}
+              <span style={{ marginRight: '20px' }}>{balance} MATIC</span>
+              {address.slice(0, 6)}.......
+              {address.slice(address.length - 4, address.length)}
             </Button>
           </PopoverTrigger>
           <Portal>
@@ -62,7 +84,7 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               <PopoverCloseButton />
               <PopoverBody>
                 <Button
-                  onClick={disconnectWallet}
+                  onClick={() => disconnect()}
                   variant='outline'
                   colorScheme='red'
                   _hover={{ bg: 'red.400', color: 'white' }}
@@ -86,12 +108,12 @@ export default function Connect({ connectWallet, disconnectWallet }) {
           bg={'green.400'}
           align={'left'}
           _hover={{ bg: 'green.500' }}
-          onClick={connectWallet}
+          onClick={() => connect()}
         >
           Connect wallet
         </Button>
       )}
-      {web3.connected ? (
+      {isConnected ? (
         <Popover>
           <PopoverTrigger>
             <Button
@@ -107,14 +129,8 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               align={'left'}
               _hover={{ color: 'green.400' }}
             >
-              {/* <span style={{ marginRight: '20px' }}>
-                {web3?.accountBalance} MATIC
-              </span> */}
-              {web3?.account?.slice(0, 6)}.......
-              {web3?.account?.slice(
-                web3?.account.length - 4,
-                web3?.account.length
-              )}
+              {address?.slice(0, 6)}.......
+              {address?.slice(address.length - 4, address.length)}
             </Button>
           </PopoverTrigger>
           <Portal>
@@ -126,7 +142,7 @@ export default function Connect({ connectWallet, disconnectWallet }) {
               <PopoverCloseButton />
               <PopoverBody>
                 <Button
-                  onClick={disconnectWallet}
+                  onClick={() => disconnect()}
                   variant='outline'
                   colorScheme='red'
                   _hover={{ bg: 'red.400', color: 'white' }}
@@ -145,7 +161,7 @@ export default function Connect({ connectWallet, disconnectWallet }) {
             display: mobileDisplay,
           }}
         >
-          <Link onClick={connectWallet}>
+          <Link onClick={() => connect()}>
             <Image alt={'logo'} fit={'cover'} align={'center'} src={Wallet} />
           </Link>
         </Box>
