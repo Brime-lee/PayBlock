@@ -9,10 +9,10 @@ import {
   Container,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import Logo from '../assets/payBlockLogo.png';
-import Connect from '../components/Connect';
 
 export default function Nav() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -60,7 +60,16 @@ export default function Nav() {
                 >
                   About us
                 </Link>
-                <Connect />
+                {/* <Connect /> */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    padding: 12,
+                  }}
+                >
+                  <ConnectButton />
+                </div>
               </Stack>
             </Flex>
           </Flex>

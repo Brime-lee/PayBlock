@@ -15,7 +15,7 @@ import {
   Popover,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 
@@ -34,23 +34,23 @@ export default function Connect() {
 
   const [balance, setBalance] = useState(null);
 
-  useEffect(() => {
-    // Connect to the Ethereum network using Ethers.js
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+  // useEffect(() => {
+  //   // Connect to the Ethereum network using Ethers.js
+  //   const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    // Get the current account address
-    provider.listAccounts().then(([address]) => {
-      // Get the account balance
-      provider.getBalance(address).then((balance) => {
-        // Convert the balance to ETH and format it to 2 decimal places
-        const balanceInEth = ethers.utils.formatEther(balance);
-        const formattedBalance = parseFloat(balanceInEth).toFixed(2);
+  //   // Get the current account address
+  //   provider.listAccounts().then(([address]) => {
+  //     // Get the account balance
+  //     provider.getBalance(address).then((balance) => {
+  //       // Convert the balance to ETH and format it to 2 decimal places
+  //       const balanceInEth = ethers.utils.formatEther(balance);
+  //       const formattedBalance = parseFloat(balanceInEth).toFixed(2);
 
-        // Update the state with the formatted balance
-        setBalance(formattedBalance);
-      });
-    });
-  }, []);
+  //       // Update the state with the formatted balance
+  //       setBalance(formattedBalance);
+  //     });
+  //   });
+  // }, []);
 
   return (
     <>

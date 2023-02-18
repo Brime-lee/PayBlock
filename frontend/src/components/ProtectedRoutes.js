@@ -1,12 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
 
 import { Navigate, Outlet } from 'react-router-dom';
 
-const ProtectedRoutes = (props) => {
-  const web3 = useSelector((state) => state.web3);
+const ProtectedRoutes = () => {
+  const { isConnected } = useAccount();
 
-  return web3?.connected ? <Outlet /> : <Navigate to='/' />;
+  return isConnected ? <Outlet /> : <Navigate to='/' />;
 };
 
 export default ProtectedRoutes;

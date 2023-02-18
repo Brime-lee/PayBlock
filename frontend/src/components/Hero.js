@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
 
 import {
   Container,
@@ -22,7 +22,7 @@ import 'aos/dist/aos.css';
 import HeroImg from '../assets/En.png';
 
 export default function Hero() {
-  const web3 = useSelector((state) => state.web3);
+  const { isConnected } = useAccount();
 
   useEffect(() => {
     AOS.init({
@@ -90,7 +90,7 @@ export default function Hero() {
             direction={{ base: 'column', sm: 'row' }}
           >
             <Link
-              href={web3?.connected ? '/userHome' : '/signup'}
+              href={isConnected ? '/userHome' : '/signup'}
               style={{ textDecoration: 'none' }}
             >
               <Button

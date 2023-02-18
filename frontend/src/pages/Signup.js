@@ -16,7 +16,8 @@ import {
   ModalBody,
   Button,
 } from '@chakra-ui/react';
-import Connect from '../components/Connect';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import Logo from '../assets/payBlockLogo.png';
 import SignupImg from '../assets/signup2.jpg';
 
@@ -48,7 +49,13 @@ export default function Signup() {
             Sign up for Pay block
           </Heading>
           <Stack spacing={6}>
-            <Link href={'/'} style={{ textDecoration: 'none', width: '100%' }}>
+            <Link
+              href={'/'}
+              style={{
+                textDecoration: 'none',
+                width: '100%',
+              }}
+            >
               <Button
                 variant='outline'
                 rounded={'full'}
@@ -62,7 +69,15 @@ export default function Signup() {
                 Back
               </Button>
             </Link>
-            <Connect />
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <ConnectButton />
+            </div>
             <Text align={'center'}>
               Connecting to your wallet with this app, confirms that you’ve read
               and agreed to Pay-Block’s{' '}

@@ -10,10 +10,10 @@ import {
   createIcon,
   Link,
 } from '@chakra-ui/react';
-import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
 
 export default function AboutHero() {
-  const web3 = useSelector((state) => state.web3);
+  const { isConnected } = useAccount();
 
   return (
     <>
@@ -49,7 +49,7 @@ export default function AboutHero() {
             position={'relative'}
           >
             <Link
-              href={web3?.connected ? '/userHome' : '/signup'}
+              href={isConnected ? '/userHome' : '/signup'}
               style={{ textDecoration: 'none' }}
             >
               <Button
