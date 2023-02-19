@@ -15,6 +15,9 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, ArrowRightIcon } from '@chakra-ui/icons';
 import { useSelector } from 'react-redux';
+import { useContract, useSigner } from 'wagmi';
+
+import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
 
 const OverlayTwo = () => (
   <ModalOverlay
@@ -28,6 +31,17 @@ const OverlayTwo = () => (
 export default function PaySalary({ onValChange, formObject, onFormSubmit }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
+
+  const signer = useSigner();
+  const contract = useContract({
+    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    abi: ensRegistryABI.abi,
+    signerOrProvider: signer,
+  });
+
+  console.log('contract', contract);
+  console.log('contract');
+  console.log('ensRegistryABI.abi', ensRegistryABI);
 
   const employeeData = useSelector((state) => state.employeeData);
   const sumAmount = employeeData.reduce(
