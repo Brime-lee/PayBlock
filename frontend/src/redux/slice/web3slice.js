@@ -6,17 +6,11 @@ const web3Slice = createSlice({
     account: null,
     connected: false,
     accountBalance: null,
-    // proxy: null,
-    // provider: null,
-    // chainId: null,
   },
   reducers: {
     connect: (state, action) => {
       state.account = action.payload.account;
       state.accountBalance = action.payload.accountBalance;
-      // state.proxy = action.payload.proxy;
-      // state.provider = action.payload.provider;
-      // state.chainId = action.payload.chainId;
       state.connected = true;
     },
     disconnect: (state) => {
