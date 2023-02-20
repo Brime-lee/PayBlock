@@ -12,6 +12,7 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useContract, useSigner, useProvider } from 'wagmi';
@@ -31,7 +32,7 @@ export default function AddEmployee() {
   const [formObject, setFormObject] = useState({
     name: '',
     walletAddress: '',
-    salary: 0,
+    salary: 0.0,
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
@@ -47,12 +48,24 @@ export default function AddEmployee() {
     signerOrProvider: signer || provider, // use signer if available, else use provider
   });
 
+  const toast = useToast();
+  const successToast = () =>
+    toast({
+      title: 'Employee Added.',
+      description:
+        'Employee have been added to your payroll, Add another employee',
+      position: 'top',
+      status: 'success',
+      duration: 9000,
+      isClosable: true,
+    });
+
   const addEmployee = async () => {
     try {
       const transaction = await contract.addEmployee(
         formObject.name,
         formObject.walletAddress,
-        formObject.salary.toString()
+        formObject.salary
       );
       const receipt = transaction.connect(signer); // use the signer to send the transaction
       console.log('Transaction sent. Transaction hash:', receipt.hash);
@@ -61,16 +74,26 @@ export default function AddEmployee() {
     }
   };
 
-  const onFormSubmit = async () => {
-    addEmployee(
-      formObject.name,
-      formObject.walletAddress,
-      formObject.salary.toString()
-    );
+  const onFormSubmit = async (event) => {
+    addEmployee(formObject.name, formObject.walletAddress, formObject.salary);
+    event.preventDefault();
+    const checkVal = !Object.values(formObject).every((res) => res === '');
+    if (checkVal) {
+      successToast();
+      setFormObject({
+        name: '',
+        walletAddress: '',
+        salary: 0.0,
+      });
+    }
   };
 
   const onValChange = (event) => {
-    setFormObject({ ...formObject, [event.target.name]: event.target.value });
+    const value = (res) => ({
+      ...res,
+      [event.target.name]: event.target.value,
+    });
+    setFormObject(value);
   };
 
   return (
@@ -116,7 +139,6 @@ export default function AddEmployee() {
 
               <FormLabel>Salary</FormLabel>
               <Input
-                // type='number'
                 value={formObject.salary}
                 name='salary'
                 onChange={onValChange}

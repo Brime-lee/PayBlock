@@ -62,7 +62,7 @@ export default function EmployeeList({ deleteEmployee }) {
   };
 
   const sumAmount = data.reduce(
-    (acc, data) => parseFloat(acc) + parseFloat(data.salary._hex),
+    (acc, data) => parseFloat(acc) + parseFloat(data.salary.toString()),
     0
   );
 
@@ -107,7 +107,7 @@ export default function EmployeeList({ deleteEmployee }) {
                         <Td>{index + 1}</Td>
                         <Td>{dat?.name}</Td>
                         <Td>{dat?.wallet}</Td>
-                        <Td>{dat?.salary._hex}</Td>
+                        <Td>{dat?.salary.toString()}</Td>
                       </Tr>
                     );
                   })}

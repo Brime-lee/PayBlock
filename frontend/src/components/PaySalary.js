@@ -1,20 +1,15 @@
 import React from 'react';
 import {
   Button,
-  Input,
-  FormControl,
-  FormLabel,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import { AddIcon, ArrowRightIcon } from '@chakra-ui/icons';
-import { useSelector } from 'react-redux';
+import { ArrowRightIcon } from '@chakra-ui/icons';
 import { useContract, useSigner, useProvider, WagmiConfig } from 'wagmi';
 import { optimism } from 'wagmi/chains';
 
@@ -29,7 +24,7 @@ const OverlayTwo = () => (
   />
 );
 
-export default function PaySalary() {
+export default function PaySalary({ sumAmount }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
 
@@ -62,12 +57,6 @@ export default function PaySalary() {
       console.error(`Error paying salaries: ${error}`);
     }
   }
-
-  const employeeData = useSelector((state) => state.employeeData);
-  const sumAmount = employeeData.reduce(
-    (acc, data) => parseFloat(acc) + parseFloat(data.amount),
-    0
-  );
 
   const today = new Date();
   const date = today.toLocaleDateString('en-GB', {
