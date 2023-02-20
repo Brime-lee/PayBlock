@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Input,
@@ -14,7 +14,9 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
-import { useSelector } from 'react-redux';
+import { useContract, useSigner, useProvider } from 'wagmi';
+import { optimism } from 'wagmi/chains';
+import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
 
 const OverlayTwo = () => (
   <ModalOverlay
@@ -25,10 +27,51 @@ const OverlayTwo = () => (
   />
 );
 
-export default function AddEmployee({ onValChange, formObject, onFormSubmit }) {
+export default function AddEmployee() {
+  const [formObject, setFormObject] = useState({
+    name: '',
+    walletAddress: '',
+    salary: 0,
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
-  const employeeData = useSelector((state) => state.employeeData);
+
+  const provider = useProvider();
+  const { data: signer } = useSigner({
+    chainId: optimism.id,
+  });
+
+  const contract = useContract({
+    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    abi: ensRegistryABI.abi,
+    signerOrProvider: signer || provider, // use signer if available, else use provider
+  });
+
+  const addEmployee = async () => {
+    try {
+      const transaction = await contract.addEmployee(
+        formObject.name,
+        formObject.walletAddress,
+        formObject.salary.toString()
+      );
+      const receipt = transaction.connect(signer); // use the signer to send the transaction
+      console.log('Transaction sent. Transaction hash:', receipt.hash);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onFormSubmit = async () => {
+    addEmployee(
+      formObject.name,
+      formObject.walletAddress,
+      formObject.salary.toString()
+    );
+  };
+
+  const onValChange = (event) => {
+    setFormObject({ ...formObject, [event.target.name]: event.target.value });
+  };
 
   return (
     <>
@@ -63,14 +106,6 @@ export default function AddEmployee({ onValChange, formObject, onFormSubmit }) {
                 onChange={onValChange}
               />
 
-              {/* <FormLabel>Designation</FormLabel>
-              <Input
-                type='text'
-                value={formObject.designation}
-                name='designation'
-                onChange={onValChange}
-              /> */}
-
               <FormLabel>Wallet Address</FormLabel>
               <Input
                 type='text'
@@ -79,11 +114,11 @@ export default function AddEmployee({ onValChange, formObject, onFormSubmit }) {
                 onChange={onValChange}
               />
 
-              <FormLabel>Salary Amount</FormLabel>
+              <FormLabel>Salary</FormLabel>
               <Input
-                type='text'
-                value={formObject.amount}
-                name='amount'
+                // type='number'
+                value={formObject.salary}
+                name='salary'
                 onChange={onValChange}
               />
             </FormControl>
