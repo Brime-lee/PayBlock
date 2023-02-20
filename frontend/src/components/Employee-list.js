@@ -7,7 +7,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   Table,
@@ -19,10 +18,11 @@ import {
   Td,
   TableContainer,
 } from '@chakra-ui/react';
-import { useSelector } from 'react-redux';
+import { useContract, useSigner, useProvider } from 'wagmi';
+import { optimism } from 'wagmi/chains';
+import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
 
 import { HamburgerIcon } from '@chakra-ui/icons';
-import { addEmployeeData } from '../redux/slice/employeeDataSlice';
 
 const OverlayTwo = () => (
   <ModalOverlay
@@ -36,11 +36,33 @@ const OverlayTwo = () => (
 export default function EmployeeList({ deleteEmployee }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
-  const employeeData = useSelector((state) => state.employeeData);
+  const [data, setdata] = React.useState([]);
 
-  console.log('eeeeeeemployeeData', employeeData);
-  const sumAmount = employeeData.reduce(
-    (acc, data) => parseFloat(acc) + parseFloat(data.amount),
+  const provider = useProvider();
+  const { data: signer } = useSigner({
+    chainId: optimism.id,
+  });
+
+  const contract = useContract({
+    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    abi: ensRegistryABI.abi,
+    signerOrProvider: signer || provider,
+  });
+
+  const getAllEmployees = async () => {
+    try {
+      const result = await contract.getAllCompanyEmployee();
+      setdata(result);
+      console.log('Result:', result);
+      setOverlay(<OverlayTwo />);
+      onOpen();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const sumAmount = data.reduce(
+    (acc, data) => parseFloat(acc) + parseFloat(data.salary._hex),
     0
   );
 
@@ -54,10 +76,7 @@ export default function EmployeeList({ deleteEmployee }) {
         bg={'green.300'}
         color={'gray.900'}
         _hover={{ bg: 'green.200' }}
-        onClick={() => {
-          setOverlay(<OverlayTwo />);
-          onOpen();
-        }}
+        onClick={getAllEmployees}
       >
         {' '}
         <HamburgerIcon w={10} /> Employee List{' '}
@@ -78,29 +97,17 @@ export default function EmployeeList({ deleteEmployee }) {
                     {/* <Th>DESIGNATION</Th> */}
                     <Th>WALLET ADDRESS</Th>
                     <Th isNumeric>AMOUNT</Th>
-                    <Th>...</Th>
+                    {/* <Th>...</Th> */}
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {employeeData?.map((data, index) => {
+                  {data?.map((dat, index) => {
                     return (
                       <Tr key={index}>
                         <Td>{index + 1}</Td>
-                        <Td>{data.name}</Td>
-                        {/* <Td>{data.designation}</Td> */}
-                        <Td>{data.walletAddress}</Td>
-                        <Td>{data.amount}</Td>
-                        <Td>
-                          <Button
-                            colorScheme={'green'}
-                            bg={'green.300'}
-                            color={'gray.900'}
-                            _hover={{ bg: 'green.200' }}
-                            onClick={() => deleteEmployee(index)}
-                          >
-                            Delete
-                          </Button>
-                        </Td>
+                        <Td>{dat?.name}</Td>
+                        <Td>{dat?.wallet}</Td>
+                        <Td>{dat?.salary._hex}</Td>
                       </Tr>
                     );
                   })}
@@ -111,39 +118,12 @@ export default function EmployeeList({ deleteEmployee }) {
                     <Th></Th>
                     <Th></Th>
                     <Th></Th>
-                    <Th>
-                      {employeeData ? Number(sumAmount).toFixed(2) : '0.00'}
-                    </Th>
+                    <Th>{data ? Number(sumAmount).toFixed(2) : '0.00'}</Th>
                   </Tr>
                 </Tfoot>
               </Table>
             </TableContainer>
           </ModalBody>
-
-          {/* <ModalFooter>
-            <Button
-              variant='ghost'
-              h='10'
-              justifyContent='left'
-              colorScheme={'green'}
-              _hover={{ bg: 'green.200', color: 'gray.900' }}
-              mr={3}
-              onClick={onClose}
-            >
-              Close
-            </Button>
-            <Button
-              h='10'
-              justifyContent='left'
-              colorScheme={'green'}
-              bg={'green.300'}
-              color={'gray.900'}
-              _hover={{ bg: 'green.200' }}
-              variant='ghost'
-            >
-              Add Employee
-            </Button>
-          </ModalFooter> */}
         </ModalContent>
       </Modal>
     </Box>

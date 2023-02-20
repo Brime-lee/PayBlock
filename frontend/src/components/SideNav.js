@@ -35,12 +35,12 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
   const btnRef = React.useRef();
 
   const [employeeData, setEmployeeData] = React.useState([]);
-  const [formObject, setFormObject] = React.useState({
-    name: '',
-    designation: '',
-    walletAddress: '',
-    amount: 0.0,
-  });
+  // const [formObject, setFormObject] = React.useState({
+  //   name: '',
+  //   designation: '',
+  //   walletAddress: '',
+  //   amount: 0.0,
+  // });
   const toast = useToast();
   const dispatch = useDispatch();
   const successToast = () =>
@@ -54,29 +54,29 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
       isClosable: true,
     });
 
-  const onValChange = (event) => {
-    const value = (res) => ({
-      ...res,
-      [event.target.name]: event.target.value,
-    });
-    setFormObject(value);
-  };
+  // const onValChange = (event) => {
+  //   const value = (res) => ({
+  //     ...res,
+  //     [event.target.name]: event.target.value,
+  //   });
+  //   setFormObject(value);
+  // };
 
-  const onFormSubmit = (event) => {
-    event.preventDefault();
-    const checkVal = !Object.values(formObject).every((res) => res === '');
-    if (checkVal) {
-      setEmployeeData((prevData) => [...prevData, formObject]);
-      dispatch(addEmployeeData(formObject)); // Dispatch the action to add employee data
-      successToast();
-      setFormObject({
-        name: '',
-        designation: '',
-        walletAddress: '',
-        amount: 0.0,
-      });
-    }
-  };
+  // const onFormSubmit = (event) => {
+  //   event.preventDefault();
+  //   const checkVal = !Object.values(formObject).every((res) => res === '');
+  //   if (checkVal) {
+  //     setEmployeeData((prevData) => [...prevData, formObject]);
+  //     dispatch(addEmployeeData(formObject)); // Dispatch the action to add employee data
+  //     successToast();
+  //     setFormObject({
+  //       name: '',
+  //       designation: '',
+  //       walletAddress: '',
+  //       amount: 0.0,
+  //     });
+  //   }
+  // };
 
   const deleteEmployee = (index) => {
     setEmployeeData((prevData) => {
@@ -147,11 +147,7 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
                 {' '}
                 <EditIcon w={10} /> Update Payroll{' '}
               </Button> */}
-              <AddEmployee
-                onValChange={onValChange}
-                formObject={formObject}
-                onFormSubmit={onFormSubmit}
-              />
+              <AddEmployee />
               <EmployeeList deleteEmployee={deleteEmployee} />
               <PaySalary />
               {/* 

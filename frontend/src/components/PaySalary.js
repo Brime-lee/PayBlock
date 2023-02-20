@@ -15,6 +15,10 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, ArrowRightIcon } from '@chakra-ui/icons';
 import { useSelector } from 'react-redux';
+import { useContract, useSigner, useProvider, WagmiConfig } from 'wagmi';
+import { optimism } from 'wagmi/chains';
+
+import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
 
 const OverlayTwo = () => (
   <ModalOverlay
@@ -25,9 +29,39 @@ const OverlayTwo = () => (
   />
 );
 
-export default function PaySalary({ onValChange, formObject, onFormSubmit }) {
+export default function PaySalary() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
+
+  const provider = useProvider();
+  const { data: signer } = useSigner({
+    chainId: optimism.id,
+  });
+
+  const contract = useContract({
+    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    abi: ensRegistryABI.abi,
+    signerOrProvider: signer || provider,
+  });
+
+  console.log('contract', contract);
+
+  async function handlePaySalaries() {
+    try {
+      // Call the paySalaries function on the contract instance
+      const transaction = await contract.paySalaries({
+        value: WagmiConfig?.utils?.parseEther('1'),
+      });
+
+      // Wait for the transaction to be confirmed
+      await transaction.wait();
+
+      // Log the successful payment to the console
+      console.log(`Salaries paid successfully`);
+    } catch (error) {
+      console.error(`Error paying salaries: ${error}`);
+    }
+  }
 
   const employeeData = useSelector((state) => state.employeeData);
   const sumAmount = employeeData.reduce(
@@ -92,7 +126,7 @@ export default function PaySalary({ onValChange, formObject, onFormSubmit }) {
               bg={'green.300'}
               color={'gray.900'}
               _hover={{ bg: 'green.200' }}
-              onClick={onFormSubmit}
+              onClick={handlePaySalaries}
             >
               Make Payment
             </Button>
