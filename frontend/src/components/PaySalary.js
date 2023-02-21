@@ -81,7 +81,7 @@ export default function PaySalary({ sumAmount }) {
         _hover={{ bg: 'green.200' }}
       >
         {' '}
-        <ArrowRightIcon w={10} /> Pay Salary{' '}
+        <ArrowRightIcon w={10} /> Pay Salary
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
