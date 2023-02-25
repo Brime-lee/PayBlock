@@ -44,7 +44,7 @@ export default function EmployeeList({ deleteEmployee }) {
   });
 
   const contract = useContract({
-    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    address: '0x7Acc8CdE770c7C8C473FFC8EE7DB44b3cc9Ae851',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider,
   });
@@ -99,7 +99,7 @@ export default function EmployeeList({ deleteEmployee }) {
                     <Th>NAME</Th>
                     {/* <Th>DESIGNATION</Th> */}
                     <Th>WALLET ADDRESS</Th>
-                    <Th isNumeric>AMOUNT</Th>
+                    <Th isNumeric>AMOUNT(MATIC)</Th>
                     {/* <Th>...</Th> */}
                   </Tr>
                 </Thead>
@@ -110,18 +110,25 @@ export default function EmployeeList({ deleteEmployee }) {
                         <Td>{index + 1}</Td>
                         <Td>{dat?.name}</Td>
                         <Td>{dat?.wallet}</Td>
-                        <Td>{dat?.salary.toString()}</Td>
+                        <Td>
+                          {parseFloat(dat?.salary.toString()) /
+                            1000000000000000000}
+                        </Td>
                       </Tr>
                     );
                   })}
                 </Tbody>
                 <Tfoot>
                   <Tr>
-                    <Th>TOTAL AMOUNT:</Th>
+                    <Th>TOTAL AMOUNT(MATIC):</Th>
                     <Th></Th>
                     <Th></Th>
                     <Th></Th>
-                    <Th>{data ? Number(sumAmount).toFixed(2) : '0.00'}</Th>
+                    <Th>
+                      {data
+                        ? parseFloat(sumAmount.toString()) / 1000000000000000000
+                        : '0.00'}
+                    </Th>
                   </Tr>
                 </Tfoot>
               </Table>

@@ -23,9 +23,6 @@ contract SalaryPayment  {
         _;
     }
   
-
-   
-   
    function setSalaryDate(uint _salaryDate) onlyOwner(owner)   public {
       salaryDate = _salaryDate;
    }
@@ -66,10 +63,11 @@ contract SalaryPayment  {
 
    }
 
+    function getAddressBalance() public view returns (uint) {
+        return address(this).balance;
+    }
 
-  /* function checkValidityAndPaySalaries ()  external payable  {
-      if (now >= salaryDate) {
-         paySalaries();
-      }
-   }*/
+    function receivePayment() public payable {
+
+    }
 }
