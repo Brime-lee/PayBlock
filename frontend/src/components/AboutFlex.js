@@ -17,14 +17,12 @@ export default function AboutFlex() {
           on salary payments, and can easily track and verify transactions.
         </Text>
       </Flex>
-      {/* <Flex flex={1}> */}
       <Image
         boxSize={{ base: '400px', lg: '600px' }}
         alt={'Login Image'}
         objectFit={'cover'}
         src={AboutImg}
       />
-      {/* </Flex> */}
     </Stack>
   );
 }
