@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import {
   Box,
@@ -20,9 +20,9 @@ import {
 } from '@chakra-ui/react';
 import { useContract, useSigner, useProvider } from 'wagmi';
 import { optimism } from 'wagmi/chains';
-import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
-
 import { HamburgerIcon } from '@chakra-ui/icons';
+
+import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
 
 const OverlayTwo = () => (
   <ModalOverlay
@@ -50,20 +50,24 @@ export default function EmployeeList({ deleteEmployee }) {
   });
 
   const getAllEmployees = async () => {
+    setOverlay(<OverlayTwo />);
+    onOpen();
     try {
       const result = await contract.getAllCompanyEmployee();
       setdata(result);
       console.log('Result:', result);
-      setOverlay(<OverlayTwo />);
-      onOpen();
     } catch (error) {
       console.error(error);
     }
   };
 
-  const sumAmount = data.reduce(
-    (acc, data) => parseFloat(acc) + parseFloat(data.salary._hex),
-    0
+  const sumAmount = useMemo(
+    () =>
+      data.reduce(
+        (acc, data) => parseFloat(acc) + parseFloat(data.salary.toString()),
+        0
+      ),
+    [data]
   );
 
   return (
@@ -78,8 +82,7 @@ export default function EmployeeList({ deleteEmployee }) {
         _hover={{ bg: 'green.200' }}
         onClick={getAllEmployees}
       >
-        {' '}
-        <HamburgerIcon w={10} /> Employee List{' '}
+        <HamburgerIcon w={10} /> Employee List
       </Button>
 
       <Modal isOpen={isOpen} size='xl' onClose={onClose}>
@@ -107,7 +110,7 @@ export default function EmployeeList({ deleteEmployee }) {
                         <Td>{index + 1}</Td>
                         <Td>{dat?.name}</Td>
                         <Td>{dat?.wallet}</Td>
-                        <Td>{dat?.salary._hex}</Td>
+                        <Td>{dat?.salary.toString()}</Td>
                       </Tr>
                     );
                   })}

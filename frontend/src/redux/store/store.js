@@ -2,11 +2,11 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { createLogger } from 'redux-logger';
-import { persistStore } from 'redux-persist';
 import { combineReducers } from '@reduxjs/toolkit';
 
 import web3Reducer from '../slice/web3slice';
-import employeeDataReducer from '../slice/employeeDataSlice';
+// import employeeDataReducer from '../slice/employeeDataSlice';
+import employeeReducer from '../slice/employeeSlice';
 
 const persistConfig = {
   key: 'root',
@@ -16,7 +16,7 @@ const persistConfig = {
 
 const reducer = combineReducers({
   web3: web3Reducer,
-  employeeData: employeeDataReducer,
+  employeeData: employeeReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

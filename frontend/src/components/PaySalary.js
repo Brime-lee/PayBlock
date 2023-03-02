@@ -1,21 +1,17 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Button,
-  Input,
-  FormControl,
-  FormLabel,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
-import { AddIcon, ArrowRightIcon } from '@chakra-ui/icons';
-import { useSelector } from 'react-redux';
-import { useContract, useSigner, useProvider, WagmiConfig } from 'wagmi';
+import { ArrowRightIcon } from '@chakra-ui/icons';
+import { useContract, useSigner, useProvider } from 'wagmi';
 import { optimism } from 'wagmi/chains';
 
 import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
@@ -32,6 +28,7 @@ const OverlayTwo = () => (
 export default function PaySalary() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
+  const [data, setdata] = React.useState([]);
 
   const provider = useProvider();
   const { data: signer } = useSigner({
@@ -44,30 +41,52 @@ export default function PaySalary() {
     signerOrProvider: signer || provider,
   });
 
-  console.log('contract', contract);
+  const toast = useToast();
+  const successToast = () =>
+    toast({
+      title: 'Employee Added.',
+      description: 'Transaction completed',
+      position: 'top',
+      status: 'success',
+      duration: 9000,
+      isClosable: true,
+    });
 
-  async function handlePaySalaries() {
+  const getAllEmployees = async () => {
+    setOverlay(<OverlayTwo />);
+    onOpen();
     try {
-      // Call the paySalaries function on the contract instance
-      const transaction = await contract.paySalaries({
-        value: WagmiConfig?.utils?.parseEther('1'),
-      });
-
-      // Wait for the transaction to be confirmed
-      await transaction.wait();
-
-      // Log the successful payment to the console
-      console.log(`Salaries paid successfully`);
+      const result = await contract.getAllCompanyEmployee();
+      setdata(result);
+      console.log('Result:', result);
     } catch (error) {
-      console.error(`Error paying salaries: ${error}`);
+      console.error(error);
     }
-  }
+  };
 
-  const employeeData = useSelector((state) => state.employeeData);
-  const sumAmount = employeeData.reduce(
-    (acc, data) => parseFloat(acc) + parseFloat(data.amount),
-    0
+  const sumAmount = useMemo(
+    () =>
+      data.reduce(
+        (acc, data) => parseFloat(acc) + parseFloat(data.salary.toString()),
+        0
+      ),
+    [data]
   );
+
+  const paySalaries = async () => {
+    setOverlay(<OverlayTwo />);
+    onOpen();
+    try {
+      const tx = await contract.paySalaries({
+        value: sumAmount, // specify any ether value you want to send along with the transaction
+      });
+      await tx.wait();
+      console.log('Transaction complete!');
+      successToast();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const today = new Date();
   const date = today.toLocaleDateString('en-GB', {
@@ -85,14 +104,10 @@ export default function PaySalary() {
         colorScheme={'green'}
         bg={'green.300'}
         color={'gray.900'}
-        onClick={() => {
-          setOverlay(<OverlayTwo />);
-          onOpen();
-        }}
+        onClick={getAllEmployees}
         _hover={{ bg: 'green.200' }}
       >
-        {' '}
-        <ArrowRightIcon w={10} /> Pay Salary{' '}
+        <ArrowRightIcon w={10} /> Pay Salary
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -126,7 +141,7 @@ export default function PaySalary() {
               bg={'green.300'}
               color={'gray.900'}
               _hover={{ bg: 'green.200' }}
-              onClick={handlePaySalaries}
+              onClick={paySalaries}
             >
               Make Payment
             </Button>
