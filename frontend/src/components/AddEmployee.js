@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useContract, useSigner, useProvider } from 'wagmi';
+import { ethers } from 'ethers';
 import { optimism } from 'wagmi/chains';
 import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
 
@@ -43,7 +44,7 @@ export default function AddEmployee() {
   });
 
   const contract = useContract({
-    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    address: '0x01ADCfA82769b99218c4F4191e9D5FCE6D3E63DD',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider, // use signer if available, else use provider
   });
@@ -65,7 +66,7 @@ export default function AddEmployee() {
       const transaction = await contract.addEmployee(
         formObject.name,
         formObject.walletAddress,
-        formObject.salary
+        ethers.utils.parseEther(formObject.salary)
       );
       const receipt = transaction.connect(signer); // use the signer to send the transaction
       console.log('Transaction sent. Transaction hash:', receipt.hash);

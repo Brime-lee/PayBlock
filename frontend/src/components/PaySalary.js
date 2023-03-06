@@ -36,7 +36,7 @@ export default function PaySalary() {
   });
 
   const contract = useContract({
-    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    address: '0x01ADCfA82769b99218c4F4191e9D5FCE6D3E63DD',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider,
   });
@@ -77,9 +77,7 @@ export default function PaySalary() {
     setOverlay(<OverlayTwo />);
     onOpen();
     try {
-      const tx = await contract.paySalaries({
-        value: sumAmount, // specify any ether value you want to send along with the transaction
-      });
+      const tx = await contract.paySalaries({ gasLimit: 1050000 });
       await tx.wait();
       console.log('Transaction complete!');
       successToast();

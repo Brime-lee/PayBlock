@@ -44,7 +44,7 @@ export default function EmployeeList({ deleteEmployee }) {
   });
 
   const contract = useContract({
-    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    address: '0x01ADCfA82769b99218c4F4191e9D5FCE6D3E63DD',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider,
   });
