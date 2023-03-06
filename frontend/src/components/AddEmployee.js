@@ -45,7 +45,7 @@ export default function AddEmployee() {
   });
 
   const contract = useContract({
-    address: '0xd0C7d29E339D647e55cdFF62008A52CB769a59bF',
+    address: '0x1b2Fa6da0478b831B05528Ba52426C3aB3e64D49',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider, // use signer if available, else use provider
   });
