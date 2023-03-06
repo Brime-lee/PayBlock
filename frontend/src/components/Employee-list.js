@@ -1,5 +1,12 @@
-import React, { useMemo } from 'react';
-import { useDisclosure } from '@chakra-ui/react';
+import React from 'react';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  useDisclosure,
+} from '@chakra-ui/react';
 import {
   Box,
   Button,
@@ -9,14 +16,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
 } from '@chakra-ui/react';
 import { useContract, useSigner, useProvider } from 'wagmi';
 import { optimism } from 'wagmi/chains';
@@ -44,7 +43,7 @@ export default function EmployeeList({ deleteEmployee }) {
   });
 
   const contract = useContract({
-    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    address: '0xd0C7d29E339D647e55cdFF62008A52CB769a59bF',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider,
   });
@@ -53,22 +52,12 @@ export default function EmployeeList({ deleteEmployee }) {
     setOverlay(<OverlayTwo />);
     onOpen();
     try {
-      const result = await contract.getAllCompanyEmployee();
+      const result = await contract.getAllEmployees();
       setdata(result);
-      console.log('Result:', result);
     } catch (error) {
       console.error(error);
     }
   };
-
-  const sumAmount = useMemo(
-    () =>
-      data.reduce(
-        (acc, data) => parseFloat(acc) + parseFloat(data.salary.toString()),
-        0
-      ),
-    [data]
-  );
 
   return (
     <Box>
@@ -91,41 +80,72 @@ export default function EmployeeList({ deleteEmployee }) {
           <ModalHeader>Employees' List</ModalHeader>
           <ModalCloseButton />
           <ModalBody style={{ marginBottom: '20px' }}>
-            <TableContainer>
-              <Table size='sm'>
-                <Thead>
-                  <Tr>
-                    <Th>ID</Th>
-                    <Th>NAME</Th>
-                    {/* <Th>DESIGNATION</Th> */}
-                    <Th>WALLET ADDRESS</Th>
-                    <Th isNumeric>AMOUNT</Th>
-                    {/* <Th>...</Th> */}
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {data?.map((dat, index) => {
-                    return (
-                      <Tr key={index}>
-                        <Td>{index + 1}</Td>
-                        <Td>{dat?.name}</Td>
-                        <Td>{dat?.wallet}</Td>
-                        <Td>{dat?.salary.toString()}</Td>
-                      </Tr>
-                    );
-                  })}
-                </Tbody>
-                <Tfoot>
-                  <Tr>
-                    <Th>TOTAL AMOUNT:</Th>
-                    <Th></Th>
-                    <Th></Th>
-                    <Th></Th>
-                    <Th>{data ? Number(sumAmount).toFixed(2) : '0.00'}</Th>
-                  </Tr>
-                </Tfoot>
-              </Table>
-            </TableContainer>
+            <Accordion>
+              <AccordionItem>
+                <h2>
+                  <AccordionButton>
+                    <Box as='span' flex='1' textAlign='left'>
+                      Marketers
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4}>
+                  <ul>
+                    {data[0]?.map((dat) => {
+                      return (
+                        <li key={dat}>
+                          <p>{dat ? dat : 'Marketers list is empty'}</p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </AccordionPanel>
+              </AccordionItem>
+
+              <AccordionItem>
+                <h2>
+                  <AccordionButton>
+                    <Box as='span' flex='1' textAlign='left'>
+                      Developers
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4}>
+                  <ul>
+                    {data[1]?.map((dat) => {
+                      return (
+                        <li key={dat}>
+                          <p>{dat}</p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </AccordionPanel>
+              </AccordionItem>
+              <AccordionItem>
+                <h2>
+                  <AccordionButton>
+                    <Box as='span' flex='1' textAlign='left'>
+                      Managers
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4}>
+                  <ul>
+                    {data[2]?.map((dat) => {
+                      return (
+                        <li key={dat}>
+                          <p>{dat}</p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </AccordionPanel>
+              </AccordionItem>
+            </Accordion>
           </ModalBody>
         </ModalContent>
       </Modal>
