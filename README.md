@@ -1,13 +1,9 @@
-# Sample Hardhat Project
+# PayBlock
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+A decentralized payroll system, the ultimate solution for hassle-free salary payments. Our app allows employers to easily set up their company with a unique wallet address and create payrolls for their employees.
 
-Try running some of the following tasks:
+visit live site: https://payblock.vercel.app/
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
+```
+
 ```

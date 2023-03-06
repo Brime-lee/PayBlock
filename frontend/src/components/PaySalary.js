@@ -58,7 +58,6 @@ export default function PaySalary() {
     try {
       const result = await contract.getAllCompanyEmployee();
       setdata(result);
-      console.log('Result:', result);
     } catch (error) {
       console.error(error);
     }

@@ -63,13 +63,12 @@ export default function AddEmployee() {
 
   const addEmployee = async () => {
     try {
-      const transaction = await contract.addEmployee(
+      await contract.addEmployee(
         formObject.name,
         formObject.walletAddress,
         ethers.utils.parseEther(formObject.salary)
       );
-      const receipt = transaction.connect(signer); // use the signer to send the transaction
-      console.log('Transaction sent. Transaction hash:', receipt.hash);
+      successToast();
     } catch (error) {
       console.error(error);
     }
@@ -80,7 +79,6 @@ export default function AddEmployee() {
     event.preventDefault();
     const checkVal = !Object.values(formObject).every((res) => res === '');
     if (checkVal) {
-      successToast();
       setFormObject({
         name: '',
         walletAddress: '',
