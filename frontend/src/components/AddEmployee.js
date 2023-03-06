@@ -13,6 +13,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   useToast,
+  Select,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useContract, useSigner, useProvider } from 'wagmi';
@@ -29,6 +30,7 @@ const OverlayTwo = () => (
 );
 
 export default function AddEmployee() {
+  const [position, setPosition] = useState();
   const [formObject, setFormObject] = useState({
     name: '',
     walletAddress: '',
@@ -43,7 +45,7 @@ export default function AddEmployee() {
   });
 
   const contract = useContract({
-    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    address: '0xd0C7d29E339D647e55cdFF62008A52CB769a59bF',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider, // use signer if available, else use provider
   });
@@ -63,27 +65,24 @@ export default function AddEmployee() {
   const addEmployee = async () => {
     try {
       const transaction = await contract.addEmployee(
-        formObject.name,
         formObject.walletAddress,
-        formObject.salary
+        Number(position)
       );
-      const receipt = transaction.connect(signer); // use the signer to send the transaction
-      console.log('Transaction sent. Transaction hash:', receipt.hash);
+      await transaction.wait();
+      successToast();
     } catch (error) {
       console.error(error);
     }
   };
 
   const onFormSubmit = async (event) => {
-    addEmployee(formObject.name, formObject.walletAddress, formObject.salary);
+    addEmployee(formObject.walletAddress, formObject.salary);
     event.preventDefault();
     const checkVal = !Object.values(formObject).every((res) => res === '');
     if (checkVal) {
-      successToast();
       setFormObject({
-        name: '',
         walletAddress: '',
-        salary: 0.0,
+        position: '',
       });
     }
   };
@@ -93,7 +92,11 @@ export default function AddEmployee() {
       ...res,
       [event.target.name]: event.target.value,
     });
-    setFormObject(value);
+    if (event.target.name === 'position') {
+      setPosition(event.target.value);
+    } else {
+      setFormObject(value);
+    }
   };
 
   return (
@@ -121,14 +124,6 @@ export default function AddEmployee() {
           <ModalCloseButton />
           <ModalBody>
             <FormControl>
-              <FormLabel>Name</FormLabel>
-              <Input
-                type='text'
-                value={formObject.name}
-                name='name'
-                onChange={onValChange}
-              />
-
               <FormLabel>Wallet Address</FormLabel>
               <Input
                 type='text'
@@ -137,12 +132,17 @@ export default function AddEmployee() {
                 onChange={onValChange}
               />
 
-              <FormLabel>Salary</FormLabel>
-              <Input
-                value={formObject.salary}
-                name='salary'
+              <FormLabel>Position</FormLabel>
+              <Select
                 onChange={onValChange}
-              />
+                value={position}
+                name='position'
+                placeholder='Kindly select your position'
+              >
+                <option value='0'>Marketer</option>
+                <option value='1'>Developer</option>
+                <option value='2'>Manager</option>
+              </Select>
             </FormControl>
           </ModalBody>
 

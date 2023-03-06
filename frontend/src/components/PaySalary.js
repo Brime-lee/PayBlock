@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Button,
   Modal,
@@ -28,7 +28,6 @@ const OverlayTwo = () => (
 export default function PaySalary() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
-  const [data, setdata] = React.useState([]);
 
   const provider = useProvider();
   const { data: signer } = useSigner({
@@ -36,7 +35,7 @@ export default function PaySalary() {
   });
 
   const contract = useContract({
-    address: '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2',
+    address: '0xd0C7d29E339D647e55cdFF62008A52CB769a59bF',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider,
   });
@@ -44,7 +43,7 @@ export default function PaySalary() {
   const toast = useToast();
   const successToast = () =>
     toast({
-      title: 'Employee Added.',
+      title: 'Salary Paid',
       description: 'Transaction completed',
       position: 'top',
       status: 'success',
@@ -52,35 +51,16 @@ export default function PaySalary() {
       isClosable: true,
     });
 
-  const getAllEmployees = async () => {
+  const getModal = async () => {
     setOverlay(<OverlayTwo />);
     onOpen();
-    try {
-      const result = await contract.getAllCompanyEmployee();
-      setdata(result);
-      console.log('Result:', result);
-    } catch (error) {
-      console.error(error);
-    }
   };
-
-  const sumAmount = useMemo(
-    () =>
-      data.reduce(
-        (acc, data) => parseFloat(acc) + parseFloat(data.salary.toString()),
-        0
-      ),
-    [data]
-  );
 
   const paySalaries = async () => {
     setOverlay(<OverlayTwo />);
     onOpen();
     try {
-      const tx = await contract.paySalaries({
-        value: sumAmount, // specify any ether value you want to send along with the transaction
-      });
-      await tx.wait();
+      await contract.payEmployeesSalaries({ gasLimit: 105000 });
       console.log('Transaction complete!');
       successToast();
     } catch (error) {
@@ -104,7 +84,7 @@ export default function PaySalary() {
         colorScheme={'green'}
         bg={'green.300'}
         color={'gray.900'}
-        onClick={getAllEmployees}
+        onClick={getModal}
         _hover={{ bg: 'green.200' }}
       >
         <ArrowRightIcon w={10} /> Pay Salary
@@ -116,10 +96,8 @@ export default function PaySalary() {
           <ModalHeader>Are you sure you want to pay Employees?</ModalHeader>
           <ModalBody>
             Today is{' '}
-            <span style={{ color: 'teal', fontWeight: 700 }}> {date}</span> and
-            the total employee salary is:{' '}
-            <span style={{ color: 'teal', fontWeight: 700 }}>{sumAmount} </span>
-            MATIC
+            <span style={{ color: 'teal', fontWeight: 700 }}> {date}</span>{' '}
+            <br /> Are you sure you want to Pay Salary Today?
           </ModalBody>
 
           <ModalFooter>
