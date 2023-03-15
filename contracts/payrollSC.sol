@@ -1,63 +1,73 @@
-// SPDX-License-Identifier: MIT
-
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
 
-contract SalaryPayment {
+contract SalaryPayment  {
+   
+   mapping (address => Employee) public employees;
+   address payable [] employeesAddress;
 
-    address owner;
-    mapping (address=>bool) public isEmployee;
-    mapping (address => Employee) employees; 
-    address[] public allCompanyEmployees;
+   uint public salaryDate;
+   
 
-    address[] marketers;
-    address[] developers;
-    address[] managers;
+   struct Employee {
+      uint salary;
+      string name;
+      address payable  wallet ;
+      address companyAddress;
+   }
+   Employee [] listOfEmp;
+   
+    address owner =msg.sender;
+    modifier onlyOwner(address _cusAddress){
+        require(msg.sender==_cusAddress,"Invalid address");
+        _;
+    }
+  
+   function setSalaryDate(uint _salaryDate) onlyOwner(owner)   public {
+      salaryDate = _salaryDate;
+   }
 
-    enum Designation {Marketers, Developers, Managers}
+   function addEmployee(string memory _name, address payable _wallet, uint _salary) onlyOwner(owner)  public {
+   
+      employees[_wallet] = Employee(_salary, _name, _wallet,msg.sender);
+      employeesAddress.push(_wallet);
+      listOfEmp.push(employees[_wallet]);
+      
 
-    struct Employee {
-        address employeeAddress;
-        Designation employeePosition;
-        uint amount;
+   }
+      function  addEmployeeToArray(Employee []  memory listEmp) private view  returns (Employee [] memory){
+       Employee[] memory result = new Employee[](listEmp.length);
+        for(uint i; i<listEmp.length; ++i){
+           if(listEmp[i].companyAddress==msg.sender){
+            result[i]=listOfEmp[i];
+           } 
+         }
+         return result;
+   }
+   function getAllCompanyEmployee() public onlyOwner(owner) view returns(Employee [] memory c){
+      c= addEmployeeToArray(listOfEmp);
+      return c;
+      
+   }
+
+   function getEmployee(address _wallet)  public view returns (uint, string memory, address) {
+   
+      return (employees[_wallet].salary, employees[_wallet].name, employees[_wallet].wallet);
+
+   }
+  function paySalaries() public onlyOwner(owner) payable  { 
+      
+         for(uint i; i<employeesAddress.length; ++i){
+           employees[employeesAddress[i]].wallet.transfer(employees[employeesAddress[i]].salary); 
+         }
+
+   }
+
+    function getAddressBalance() public view returns (uint) {
+        return address(this).balance;
     }
 
-    constructor(){
-        owner = msg.sender;
-    }
+    function receivePayment() public payable {
 
-
-    
-    function addEmployee(address payable employeeAddress, Designation _position) public {
-        isEmployee[employeeAddress] = true;
-
-        uint designatedPay;
-
-        if (_position == Designation.Marketers) {
-            marketers.push(employeeAddress);
-            designatedPay = 0.01 ether;
-        } 
-        else if (_position == Designation.Developers) {
-            developers.push(employeeAddress);
-            designatedPay = 0.02 ether;
-        } 
-        else if (_position == Designation.Managers) {
-            managers.push(employeeAddress);
-            designatedPay = 0.03 ether;
-        }
-
-        Employee memory newEmployee = Employee(employeeAddress,_position, designatedPay);
-        employees[employeeAddress] = newEmployee;
-        allCompanyEmployees.push(employeeAddress);
-    }
-
-    function getAllEmployees() public view returns (address[] memory, address[] memory, address[] memory) {
-        return (marketers, developers, managers);
-    }
-
-
-    function payEmployeesSalaries() public payable {
-        for (uint i = 0; i < allCompanyEmployees.length; i++) {
-            payable(allCompanyEmployees[i]).transfer(employees[allCompanyEmployees[i]].amount);
-        }
     }
 }

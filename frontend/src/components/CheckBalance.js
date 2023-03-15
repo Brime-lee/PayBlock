@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Modal,
@@ -8,9 +8,8 @@ import {
   ModalFooter,
   ModalBody,
   useDisclosure,
-  useToast,
 } from '@chakra-ui/react';
-import { ArrowRightIcon } from '@chakra-ui/icons';
+import { ViewIcon } from '@chakra-ui/icons';
 import { useContract, useSigner, useProvider } from 'wagmi';
 import { optimism } from 'wagmi/chains';
 
@@ -25,10 +24,10 @@ const OverlayTwo = () => (
   />
 );
 
-export default function PaySalary() {
+export default function CheckBalance() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [overlay, setOverlay] = React.useState(<OverlayTwo />);
-  const [data, setdata] = React.useState([]);
+  const [overlay, setOverlay] = useState(<OverlayTwo />);
+  const [addressBalance, setAddressBalance] = useState('');
 
   const provider = useProvider();
   const { data: signer } = useSigner({
@@ -41,48 +40,17 @@ export default function PaySalary() {
     signerOrProvider: signer || provider,
   });
 
-  const toast = useToast();
-  const successToast = () =>
-    toast({
-      title: 'Employee Added.',
-      description: 'Transaction completed',
-      position: 'top',
-      status: 'success',
-      duration: 9000,
-      isClosable: true,
-    });
-
-  const getAllEmployees = async () => {
+  const getBalance = async () => {
     setOverlay(<OverlayTwo />);
     onOpen();
     try {
-      const result = await contract.getAllCompanyEmployee();
-      setdata(result);
-      console.log('Result:', result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const sumAmount = useMemo(
-    () =>
-      data.reduce(
-        (acc, data) =>
-          parseFloat(acc) +
-          parseFloat(data.salary.toString()) / 1000000000000000000,
-        0
-      ),
-    [data]
-  );
-
-  const paySalaries = async () => {
-    setOverlay(<OverlayTwo />);
-    onOpen();
-    try {
-      const tx = await contract.paySalaries({ gasLimit: 1000000 });
-      await tx.wait();
-      console.log('Transaction complete!');
-      successToast();
+      let getBalance = contract.getAddressBalance();
+      let balance = await getBalance;
+      console.log(balance.toString());
+      let contractBalance =
+        parseFloat(balance.toString()) / 1000000000000000000;
+      setAddressBalance(contractBalance);
+      console.log('cbdhgdghwe', contractBalance);
     } catch (error) {
       console.error(error);
     }
@@ -104,10 +72,10 @@ export default function PaySalary() {
         colorScheme={'green'}
         bg={'green.300'}
         color={'gray.900'}
-        onClick={getAllEmployees}
+        onClick={getBalance}
         _hover={{ bg: 'green.200' }}
       >
-        <ArrowRightIcon w={10} /> Pay Salary
+        <ViewIcon w={10} /> Contract Balance
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -117,8 +85,10 @@ export default function PaySalary() {
           <ModalBody>
             Today is{' '}
             <span style={{ color: 'teal', fontWeight: 700 }}> {date}</span> and
-            the total employee salary is:{' '}
-            <span style={{ color: 'teal', fontWeight: 700 }}>{sumAmount} </span>
+            the contract balance is:{' '}
+            <span style={{ color: 'teal', fontWeight: 700 }}>
+              {addressBalance}{' '}
+            </span>
             MATIC
           </ModalBody>
 
@@ -133,17 +103,6 @@ export default function PaySalary() {
               onClick={onClose}
             >
               Close
-            </Button>
-            <Button
-              h='10'
-              justifyContent='left'
-              colorScheme={'green'}
-              bg={'green.300'}
-              color={'gray.900'}
-              _hover={{ bg: 'green.200' }}
-              onClick={paySalaries}
-            >
-              Make Payment
             </Button>
           </ModalFooter>
         </ModalContent>

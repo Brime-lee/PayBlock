@@ -14,7 +14,7 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import { useContract, useSigner, useProvider } from 'wagmi';
 import { optimism } from 'wagmi/chains';
 import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
@@ -29,11 +29,9 @@ const OverlayTwo = () => (
   />
 );
 
-export default function AddEmployee() {
+export default function FundContract() {
   const [formObject, setFormObject] = useState({
-    name: '',
-    walletAddress: '',
-    salary: '',
+    amount: '',
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
@@ -61,15 +59,13 @@ export default function AddEmployee() {
       isClosable: true,
     });
 
-  const addEmployee = async () => {
+  const receiveFund = async () => {
     try {
-      const transaction = await contract.addEmployee(
-        formObject.name,
-        formObject.walletAddress,
-        ethers.utils.parseEther(formObject.salary.toString())
-      );
-      const receipt = transaction.connect(signer); // use the signer to send the transaction
-      console.log('Transaction sent. Transaction hash:', receipt.hash);
+      let addFunds = contract.receivePayment({
+        value: ethers.utils.parseEther(formObject.amount.toString()),
+      });
+      let funds = await addFunds;
+      console.log(funds);
       successToast();
     } catch (error) {
       console.error(error);
@@ -77,13 +73,11 @@ export default function AddEmployee() {
   };
 
   const onFormSubmit = async (event) => {
-    addEmployee(formObject.name, formObject.walletAddress, formObject.salary);
+    receiveFund(formObject.salary);
     event.preventDefault();
     const checkVal = !Object.values(formObject).every((res) => res === '');
     if (checkVal) {
       setFormObject({
-        name: '',
-        walletAddress: '',
         salary: '',
       });
     }
@@ -112,36 +106,20 @@ export default function AddEmployee() {
           onOpen();
         }}
       >
-        <AddIcon w={10} /> Add Employee
+        <CheckCircleIcon w={10} /> Fund Contract
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         {overlay}
         <ModalContent>
-          <ModalHeader>Add Employee</ModalHeader>
+          <ModalHeader>Fund Contract address to pay Employee</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Add Amount</FormLabel>
               <Input
-                type='text'
-                value={formObject.name}
-                name='name'
-                onChange={onValChange}
-              />
-
-              <FormLabel>Wallet Address</FormLabel>
-              <Input
-                type='text'
-                value={formObject.walletAddress}
-                name='walletAddress'
-                onChange={onValChange}
-              />
-
-              <FormLabel>Salary</FormLabel>
-              <Input
-                value={formObject.salary}
-                name='salary'
+                value={formObject.amount}
+                name='amount'
                 onChange={onValChange}
               />
             </FormControl>
@@ -168,7 +146,7 @@ export default function AddEmployee() {
               _hover={{ bg: 'green.200' }}
               onClick={onFormSubmit}
             >
-              Add Employee
+              Fund
             </Button>
           </ModalFooter>
         </ModalContent>

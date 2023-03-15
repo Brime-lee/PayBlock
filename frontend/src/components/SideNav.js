@@ -17,8 +17,10 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 import AddEmployee from './AddEmployee';
 import EmployeeList from './Employee-list';
 import PaySalary from './PaySalary';
+import CheckBalance from './CheckBalance';
+import FundContract from './FundContract';
 
-export default function SideNav({ newAccount, accountChangedHandler }) {
+export default function SideNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
 
@@ -49,6 +51,8 @@ export default function SideNav({ newAccount, accountChangedHandler }) {
             <Grid templateRows='repeat(5, 1fr)' gap={6}>
               <AddEmployee />
               <EmployeeList />
+              <FundContract />
+              <CheckBalance />
               <PaySalary />
             </Grid>
           </DrawerBody>
