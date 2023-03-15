@@ -97,10 +97,8 @@ export default function EmployeeList({ deleteEmployee }) {
                   <Tr>
                     <Th>ID</Th>
                     <Th>NAME</Th>
-                    {/* <Th>DESIGNATION</Th> */}
                     <Th>WALLET ADDRESS</Th>
                     <Th isNumeric>AMOUNT(MATIC)</Th>
-                    {/* <Th>...</Th> */}
                   </Tr>
                 </Thead>
                 <Tbody>

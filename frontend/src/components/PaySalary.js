@@ -15,7 +15,6 @@ import { useContract, useSigner, useProvider } from 'wagmi';
 import { optimism } from 'wagmi/chains';
 
 import ensRegistryABI from '../artifacts/contracts/payrollSC.sol/SalaryPayment.json';
-import { ethers } from 'ethers';
 
 const OverlayTwo = () => (
   <ModalOverlay

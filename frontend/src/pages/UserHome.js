@@ -5,8 +5,6 @@ import SideNav from '../components/SideNav';
 import Background from '../assets/payrolll3.webp';
 import { Box } from '@chakra-ui/react';
 
-// const contractAddress = '0x1dA8BF6F4FD087bC6Fa27b645462E8dB3BE3FfD2';
-
 export default function UserHome() {
   return (
     <Container maxW={'7xl'}>
