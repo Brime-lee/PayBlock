@@ -42,7 +42,7 @@ export default function FundContract() {
   });
 
   const contract = useContract({
-    address: '0xA5dD286b01f292079c0D17163E3eE843a8AB7E00',
+    address: '0x3e23Ff1339dB35CDA727C06ffA108a45Ee014a10',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider, // use signer if available, else use provider
   });
