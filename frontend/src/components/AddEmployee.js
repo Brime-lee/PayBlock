@@ -42,9 +42,9 @@ export default function AddEmployee() {
   const { data: signer } = useSigner({
     chainId: optimism.id,
   });
-
+  // last working contract: 0x7Acc8CdE770c7C8C473FFC8EE7DB44b3cc9Ae851
   const contract = useContract({
-    address: '0x7Acc8CdE770c7C8C473FFC8EE7DB44b3cc9Ae851',
+    address: '0xA5dD286b01f292079c0D17163E3eE843a8AB7E00',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider, // use signer if available, else use provider
   });
@@ -66,7 +66,10 @@ export default function AddEmployee() {
       const transaction = await contract.addEmployee(
         formObject.name,
         formObject.walletAddress,
-        ethers.utils.parseEther(formObject.salary.toString())
+        ethers.utils.parseEther(formObject.salary.toString()),
+        {
+          gasLimit: 1000000,
+        }
       );
       const receipt = transaction.connect(signer); // use the signer to send the transaction
       console.log('Transaction sent. Transaction hash:', receipt.hash);

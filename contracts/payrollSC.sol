@@ -18,16 +18,20 @@ contract SalaryPayment  {
    Employee [] listOfEmp;
    
     address owner =msg.sender;
-    modifier onlyOwner(address _cusAddress){
-        require(msg.sender==_cusAddress,"Invalid address");
-        _;
-    }
+
+// for assessment purpose this onlyOwner modifer has been commented out.
+// these functions are supposed to be called by the authorizeOwners only
+
+   //  modifier onlyOwner(address _cusAddress){
+   //      require(msg.sender==_cusAddress,"Invalid address");
+   //      _;
+   //  }
   
-   function setSalaryDate(uint _salaryDate) onlyOwner(owner)   public {
+   function setSalaryDate(uint _salaryDate) public {
       salaryDate = _salaryDate;
    }
 
-   function addEmployee(string memory _name, address payable _wallet, uint _salary) onlyOwner(owner)  public {
+   function addEmployee(string memory _name, address payable _wallet, uint _salary) public {
    
       employees[_wallet] = Employee(_salary, _name, _wallet,msg.sender);
       employeesAddress.push(_wallet);
@@ -44,7 +48,7 @@ contract SalaryPayment  {
          }
          return result;
    }
-   function getAllCompanyEmployee() public onlyOwner(owner) view returns(Employee [] memory c){
+   function getAllCompanyEmployee() public view returns(Employee [] memory c){
       c= addEmployeeToArray(listOfEmp);
       return c;
       
@@ -55,7 +59,7 @@ contract SalaryPayment  {
       return (employees[_wallet].salary, employees[_wallet].name, employees[_wallet].wallet);
 
    }
-  function paySalaries() public onlyOwner(owner) payable  { 
+  function paySalaries() public payable  { 
       
          for(uint i; i<employeesAddress.length; ++i){
            employees[employeesAddress[i]].wallet.transfer(employees[employeesAddress[i]].salary); 
