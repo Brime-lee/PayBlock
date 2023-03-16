@@ -33,7 +33,7 @@ const OverlayTwo = () => (
   />
 );
 
-export default function EmployeeList({ deleteEmployee }) {
+export default function EmployeeList() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [overlay, setOverlay] = React.useState(<OverlayTwo />);
   const [data, setdata] = React.useState([]);
@@ -44,7 +44,7 @@ export default function EmployeeList({ deleteEmployee }) {
   });
 
   const contract = useContract({
-    address: '0x7Acc8CdE770c7C8C473FFC8EE7DB44b3cc9Ae851',
+    address: '0xA5dD286b01f292079c0D17163E3eE843a8AB7E00',
     abi: ensRegistryABI.abi,
     signerOrProvider: signer || provider,
   });
@@ -97,10 +97,8 @@ export default function EmployeeList({ deleteEmployee }) {
                   <Tr>
                     <Th>ID</Th>
                     <Th>NAME</Th>
-                    {/* <Th>DESIGNATION</Th> */}
                     <Th>WALLET ADDRESS</Th>
                     <Th isNumeric>AMOUNT(MATIC)</Th>
-                    {/* <Th>...</Th> */}
                   </Tr>
                 </Thead>
                 <Tbody>
